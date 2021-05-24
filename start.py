@@ -1,19 +1,32 @@
 import telebot
-import random
+import sqlite3
 import config
 from telebot import types
+from src.TelegramAPI.KeybordManager import KeybordManager
 
+# SQLite3
+conn = sqlite3.connect('games.db')
+
+def createDB(conn):
+    conn.cursor().execute("""CREATE TABLE IF NOT EXISTS games(
+        id INT PRIMARY KEY,
+        name TEXT,
+        rating INT,
+        description TEXT);
+    """)
+    conn.commit()
+
+createDB(conn)
+
+
+#TelegramBot init
 bot = telebot.TeleBot(config.TOKEN)
-
 
 @bot.message_handler(commands=['start'])
 def welcome(message):
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("Топ 10 игр")
-    item2 = types.KeyboardButton("Поиск игры по названию")
-
-    markup.add(item1, item2)
+    board = KeybordManager(types.ReplyKeyboardMarkup(resize_keyboard=True), types)
+    board.viewWelcome("Топ 10 игр", "Поиск по названию")
 
     bot.send_message(message.chat.id, "дарова пользуйся клавой".format(message.from_user, bot.get_me()),
                      parse_mode='html', reply_markup=markup)
@@ -30,6 +43,5 @@ def lalala(message):
            #todo
         else:
             bot.send_message(message.chat.id, 'пользуйся клавиатурой от телеграма дурак')
-
 
 bot.polling(none_stop=True)

@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 import requests
 import config
 
-
-def parseInit(url, header):
-   return requests.get(url, header)
+class Parser:
+   def parseInit(url, header):
+      return requests.get(url, header)
 
 def parse(response):
    soup =  BeautifulSoup(response.content, 'lxml')
@@ -20,9 +20,3 @@ def parse(response):
          }
       )
    return elements
-
-response = parseInit(config.SITE_URL, {'User-Agent': config.USER_AGENT})
-
-da = parse(response)
-for item in da:
-   print(item['name'])
