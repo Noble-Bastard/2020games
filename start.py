@@ -1,8 +1,13 @@
 import telebot
 import sqlite3
 import config
+import os
 from telebot import types
 from src.TelegramAPI.KeybordManager import KeybordManager
+
+# удаляем чтобы записи не перезаписывались при следующем включении
+path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'games.db')
+os.remove(path)
 
 # SQLite3
 conn = sqlite3.connect('games.db')
@@ -11,8 +16,10 @@ def createDB(conn):
     conn.cursor().execute("""CREATE TABLE IF NOT EXISTS games(
         id INT PRIMARY KEY,
         name TEXT,
+        link TEXT,
+        imageLink TEXT,
         rating INT,
-        description TEXT);
+        metacritic INT);
     """)
     conn.commit()
 

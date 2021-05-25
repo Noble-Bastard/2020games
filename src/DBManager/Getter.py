@@ -3,7 +3,7 @@ class Getter:
       self.database = db
 
    def getGameInfo(self, game):
-      return self.database.cursor().execute("SELECT * FROM games WHERE name='game'")
+      return self.database.cursor().execute(f"SELECT * FROM games WHERE name='{game}'")
 
    def getTopTenGames(self):
       cur = self.database.cursor()
