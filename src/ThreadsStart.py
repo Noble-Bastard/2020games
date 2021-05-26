@@ -12,27 +12,25 @@ class ThreadStart:
 
 
    def startParsing(self, parserClass):
-      threadX = Thread(target=parserClass.parser,
-                       args=(1, 66, self.url,))
       thread = Thread(target=parserClass.parser,
-                      args=(67, 132, self.url,))
+                      args=(41, 80, self.url,))
       thread1 = Thread(target=parserClass.parser,
-                       args=(133, 200, self.url,))
-    #   thread2 = Thread(target=parserClass.parser,
-    #                    args=(121, 160, self.url,))
-    #   thread3 = Thread(target=parserClass.parser,
-    #                    args=(161, 200, self.url,))
-      threadX.start()
+                       args=(81, 120, self.url,))
+      thread2 = Thread(target=parserClass.parser,
+                       args=(121, 160, self.url,))
+      thread3 = Thread(target=parserClass.parser,
+                       args=(161, 200, self.url,))
+
       thread.start()
       thread1.start()
-    #   thread2.start()
-    #   thread3.start()
-      threadX.join()
+      thread2.start()
+      thread3.start()
+      parserClass.parser(1, 40, self.url)
       thread.join()
       thread1.join()
-    #   thread2.join()
-    #   thread3.join()
-    #  parserClass.parser(1, 40, self.url)
+      thread2.join()
+      thread3.join()
+    
 
 
 
@@ -55,7 +53,7 @@ createDB(conn)
 
 start_time = time()
 
-cls = ThreadStart('https://www.igromania.ru/games/all/all/2020/')
+cls = ThreadStart('https://www.igromania.ru/games/all/all/2020/all/all/0/')
 cls.startParsing(Parser(Setter()))
 
 print("--- %s seconds ---" % (time() - start_time))
