@@ -1,4 +1,4 @@
-��# 2020games
+## 2020games
 
 pip install pyTelegramBotAPI
 
