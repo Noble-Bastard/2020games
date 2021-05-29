@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
+import sqlite3
+import sys
 
 class Parser:
 
@@ -12,7 +14,7 @@ class Parser:
       return requests.get(url, header)
 
    def getElements(self, response):
-      soup =  BeautifulSoup(response.content, 'lxml')
+      soup =  BeautifulSoup(response, 'lxml')
       items = soup.select('div.game-card')
       elements = []
 
@@ -23,7 +25,8 @@ class Parser:
              'link': item.select_one('a.name').get('href'),
              'imageLink': item.select_one('img.image').get('src'),
              'rating': item.select_one('div.users').select_one('span.value').text,
-             'metacritic': item.select_one('div.metacritic').select_one('span.value').text
+             'metacritic': item.select_one('div.metacritic').select_one('span.value').text,
+             'category': ' '.join(item.select_one('div.tags').text.split())
 
             }
          )
@@ -41,14 +44,13 @@ class Parser:
    def parser(self, startPages, pages, url):
       for page in range(startPages, pages+1):
          print(f'Идет парсинг страницы {page}')
-         response = requests.get(url + str(page), {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'})
+         response = self.parseInit(url + str(page), {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'})
          if response.status_code != 200:
             print(f"сайт не дал нужного ответа, скорее всего неправильный url или сайт лежит{page}")
-            exit()
-
-         content = self.getElements(response)
-         for item in content:
-            self.setter.setGameInfo(item)
+            esys.exit()
+         database = sqlite3.connect('game.db', isolation_level=None)
+         self.setter.setGameInfo(self.getElements(response.text), database)
+         database.close()
 
 
    
