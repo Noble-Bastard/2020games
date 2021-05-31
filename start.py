@@ -10,12 +10,12 @@ from src.Parser import Parser
 from src.DBManager.Setter import Setter
 from src.DBManager.Getter import Getter
 from src.GamesManager.GetGames import GetGames
-from time import time, sleep
+from time import time
 
 
 # удаляем чтобы записи не перезаписывались при следующем включении
-path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'game.db')
-os.remove(path)
+# path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'game.db')
+# os.remove(path)
 
 os.environ['no_proxy'] = '127.0.0.1,localhost'#нужно удалить эту строчку если под линукс запускать
 
@@ -39,14 +39,15 @@ def createDB(conn):
 createDB(conn)
 conn.close()
 
-start_time = time()
-# start a parsing
-cls = ThreadStart(config.FOR_PAGINATION_URL)
-cls.startParsing(Parser(Setter()), Parser(
-     Setter()), Parser(Setter()), Parser(Setter()))
+
+if config.PARSING == 0:
+    start_time = time()
+    cls = ThreadStart(config.FOR_PAGINATION_URL)
+    cls.startParsing(Parser(Setter()), Parser(
+        Setter()), Parser(Setter()), Parser(Setter()), Parser(Setter()), config.USER_AGENT)
     
-print("--- %s seconds ---" % (time() - start_time))
-print("Парсинг закончился, надеюсь успешно")
+    print("--- %s seconds ---" % (time() - start_time))
+    print("Парсинг закончился, надеюсь успешно")
 
 #TelegramBot init
 bot = telebot.TeleBot(config.TOKEN)
