@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import requests
-import sqlite3
 import sys
 
 class Parser:
@@ -10,7 +9,7 @@ class Parser:
 
 
    # user-agent стоит дефолтным мой, если что изменишь
-   def parseInit(self, url, header={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'}):
+   def parseInit(self, url, header):
       return requests.get(url, header)
 
    def getElements(self, response):
@@ -40,17 +39,15 @@ class Parser:
          return soup.select_one('div.description').text
 
       return desc
-  
-   def parser(self, startPages, pages, url):
+   
+   
+   def parser(self, startPages, pages, url, header={'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'}):
       for page in range(startPages, pages+1):
          print(f'Идет парсинг страницы {page}')
-         response = self.parseInit(url + str(page), {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36'})
+         response = self.parseInit(url + str(page), header)
          if response.status_code != 200:
             print(f"сайт не дал нужного ответа, скорее всего неправильный url или сайт лежит{page}")
-            esys.exit()
-         database = sqlite3.connect('game.db', isolation_level=None)
-         self.setter.setGameInfo(self.getElements(response.text), database)
-         database.close()
-
-
-   
+            sys.exit()
+         content = self.getElements(response.text)
+         for game in content:
+            self.setter.setGameInfo(game)
