@@ -2,6 +2,7 @@ import telebot
 import sqlite3
 import config
 import os
+
 from telebot import types
 from src.TelegramAPI.KeyboardManager import KeybordManager
 from src.TelegramAPI.KeyboardListener import KeybordListener
@@ -12,14 +13,6 @@ from src.DBManager.Getter import Getter
 from src.GamesManager.GetGames import GetGames
 from time import time
 
-
-# удаляем чтобы записи не перезаписывались при следующем включении
-# path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'game.db')
-# os.remove(path)
-
-os.environ['no_proxy'] = '127.0.0.1,localhost'#нужно удалить эту строчку если под линукс запускать
-
-# SQLite3
 conn = sqlite3.connect('game.db', isolation_level=None)
 
 
@@ -35,34 +28,36 @@ def createDB(conn):
     """)
     conn.commit()
 
-    
+
 createDB(conn)
 conn.close()
-
 
 if config.PARSING == 0:
     start_time = time()
     cls = ThreadStart(config.FOR_PAGINATION_URL)
     cls.startParsing(Parser(Setter()), Parser(
         Setter()), Parser(Setter()), Parser(Setter()), Parser(Setter()), config.USER_AGENT)
-    
-    print("--- %s seconds ---" % (time() - start_time))
-    print("Парсинг закончился, надеюсь успешно")
 
-#TelegramBot init
+    print("--- Парсинг завершен за %s секунд ---" % (time() - start_time))
+
 bot = telebot.TeleBot(config.TOKEN)
 
 board = KeybordManager(types)
 boardText = config.MAINKEYBOARD
+
+
 @bot.message_handler(commands=['start'])
 def welcome(message):
-    welcomeMarkup = board.viewWelcome(boardText['topten'], boardText["search"], boardText['help'])
+    welcomeMarkup = board.viewWelcome(boardText['top-ten'], boardText["search"])
 
-    bot.send_message(message.chat.id, "дарова пользуйся клавой".format(message.from_user, bot.get_me()),
-                     parse_mode='html', reply_markup=welcomeMarkup)
+    bot.send_message(message.chat.id,
+                     "В поисках игр 2020 года? Тогда тебе именно сюда! \n \n ? - Используй клавиатуру для быстрого "
+                     "ввода" . format(
+                         message.from_user, bot.get_me()), parse_mode='html', reply_markup=welcomeMarkup)
 
 
 listener = KeybordListener(GetGames(Getter(), Parser(Setter())), bot, board, config)
+
 
 @bot.message_handler(content_types=['text'])
 def replykeyboardResponse(message):
