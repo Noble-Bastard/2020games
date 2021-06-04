@@ -8,7 +8,9 @@ class Parser:
     def __init__(self, setterInstance):
         self.setter = setterInstance
 
-    def parseInit(self, url, header):
+    def parseInit(self, url, header={
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/90.0.4430.212 Safari/537.36'}):
         return requests.get(url, header)
 
     def getElements(self, response):
