@@ -28,7 +28,7 @@ class GetGames:
         category = gameName[0][6]
         imageLink = gameName[0][3]
         image = imageLink.replace("//", "")
-        response = self.parser.parseInit(link)
+        response = self.parser.parseInit(link, config.USER_AGENT)
         description = self.parser.getDescription(response)
 
         return f'<a href="{image}">&#8204;</a>' + f' Название: {name} {rating}⭐\n Категория: {category} \n \n Критика ' \
